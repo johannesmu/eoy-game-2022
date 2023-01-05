@@ -52,18 +52,17 @@ const playerSetUp = () => {
 let flying = false;
 let falling = false
 const playAnimation = ( name ) => {
-  if( name == "down" && flying == false ) {
+  if( name == "down" && falling == false ) {
     gotoAndPlay("down")
-    flying = true
+    falling = true
   }
-  
 }
 
 const onUpdate = (event) => {
   if (gamePaused == false) {
     // if the game is playing
     if( mouseDown == true ) {
-      playAnimation("down")
+      playAnimation("up")
     }
     else {
 
