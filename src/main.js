@@ -31,7 +31,7 @@ let obstacles = []
 
 function preload() {
   //player
-  this.load.spritesheet('santa', 'images/sprites/player/SantaSpriteSheet.png', { frameWidth: 300, frameHeight: 123 })
+  this.load.spritesheet('santa', 'images/sprites/player/SantaSpriteSheet.png', { frameWidth: 350, frameHeight: 175 })
   //obstacles
   this.load.spritesheet('objects', 'images/sprites/objects/Obstacles_Sprite_Sheet.png', { frameWidth: 480, frameHeight: 360 })
   // background
@@ -64,6 +64,11 @@ function create() {
     frames: this.anims.generateFrameNumbers("santa", { start: 7, end: 9 }),
     repeat: -1
   })
+
+  // chaining animations
+//   character.sprite.play("ball_out").once('animationcomplete', () => {
+//     character.sprite.play("feather_in");
+//  });
 
   // player
   player = this.physics.add.sprite(400, 50, 'santa')
@@ -102,7 +107,6 @@ function update() {
     player.setVelocityY(100)
     player.play("down")
   }
-  console.log( player.y )
 
   tick++
   if( tick % obsInterval == 0 ) {
