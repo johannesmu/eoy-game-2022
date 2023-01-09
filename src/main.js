@@ -28,15 +28,27 @@ let score = 0
 // obstacles
 let obsInterval = 400
 let obstacles = []
+let obstacleFiles = [
+ {name: "hat", file: "OBS_BowlerHat.png"},
+ {name: "chandelier", file:"OBS_Chandelier.png"},
+ {name: "clock", file:"OBS_DrippyClock.png"},
+ {name: "pipe", file:"OBS_Pipe.png"},
+ {name: "spider", file:"OBS_Spider.png"},
+ {name: "urinal", file:"OBS_Urinal.png"},
+]
 
 function preload() {
   //player
   this.load.spritesheet('santa', 'images/sprites/player/SantaSpriteSheet.png', { frameWidth: 600, frameHeight: 326 })
   //obstacles
-  this.load.spritesheet('objects', 'images/sprites/objects/Obstacles_Sprite_Sheet.png', { frameWidth: 480, frameHeight: 360 })
+  obstacleFiles.forEach( (obsfile) => {
+    this.load.image( obsfile.name, `images/sprites/objects/${obsfile.file}`)
+  })
+  
   // background
   this.load.image('cloudsL', 'images/backgrounds/Clouds_Large-Fluffy.png')
   this.load.image('cloudsS', 'images/backgrounds/Clouds_Small-fluffy.png')
+
 }
 
 function create() {
@@ -47,20 +59,26 @@ function create() {
   text = this.add.text(0, 0, score, { fontFamily:'Arial, Helvetica, sans-serif', fontSize: 20, padding: 10, textShadow: "1 1 1 4px black" })
   // animations
   this.anims.create({
-    key: "down",
-    frameRate: 7,
+    key: "up",
+    frameRate: 8,
     frames: this.anims.generateFrameNumbers("santa", { start: 0, end: 3 }),
     repeat: -1
   })
   this.anims.create({
-    key: "up",
-    frameRate: 7,
+    key: "down",
+    frameRate: 8,
     frames: this.anims.generateFrameNumbers("santa", { start: 4, end: 6 }),
     repeat: -1
   })
   this.anims.create({
     key: "crash",
-    frameRate: 7,
+    frameRate: 8,
+    frames: this.anims.generateFrameNumbers("santa", { start: 7, end: 9 }),
+    repeat: 1
+  })
+  this.anims.create({
+    key: "burn",
+    frameRate: 8,
     frames: this.anims.generateFrameNumbers("santa", { start: 7, end: 9 }),
     repeat: -1
   })
@@ -125,11 +143,16 @@ function update() {
 
 function createObstacle(e) {
   lanes = [30, 240, 480]
-  let obj = e.physics.add.sprite(1300, lanes[ randGen(2) ] + 120,"objects")
-  const framenum = randGen(5)
-  obj.setFrame( framenum )
+  const obsRange = randGen( obstacleFiles.length - 1 )
+  console.log(obsRange)
+  const obsname = obstacleFiles[obsRange].name
+  console.log( obsname )
+  let obj = e.physics.add.sprite(1300, lanes[ randGen(2) ] + 120, obsname )
+  // const framenum = randGen(5)
+  // obj.setFrame( framenum )
+  const obsScale = Math.random()
+  obj.setScale(obsScale)
   e.physics.add.collider( player, obj, ( player, obj ) => {
-    // console.log("hit")
     isPlaying = false
     player.play("crash")
     player.setVelocityY(300)
