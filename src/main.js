@@ -65,6 +65,11 @@ function create() {
     repeat: -1
   })
 
+  // chaining animations
+//   character.sprite.play("ball_out").once('animationcomplete', () => {
+//     character.sprite.play("feather_in");
+//  });
+
   // player
   player = this.physics.add.sprite(400, 50, 'santa')
   player.setCollideWorldBounds(true)
@@ -103,7 +108,6 @@ function update() {
     player.setVelocityY(100)
     player.play("down")
   }
-  console.log( player.y )
 
   tick++
   if( tick % obsInterval == 0 ) {
