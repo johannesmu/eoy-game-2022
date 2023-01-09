@@ -31,7 +31,7 @@ let obstacles = []
 
 function preload() {
   //player
-  this.load.spritesheet('santa', 'images/sprites/player/SantaSpriteSheet.png', { frameWidth: 300, frameHeight: 123 })
+  this.load.spritesheet('santa', 'images/sprites/player/SantaSpriteSheet.png', { frameWidth: 600, frameHeight: 326 })
   //obstacles
   this.load.spritesheet('objects', 'images/sprites/objects/Obstacles_Sprite_Sheet.png', { frameWidth: 480, frameHeight: 360 })
   // background
@@ -69,6 +69,7 @@ function create() {
   player = this.physics.add.sprite(400, 50, 'santa')
   player.setCollideWorldBounds(true)
   player.play("down")
+  player.setScale(0.38)
 
   // obstacle
   this.anims.create({
