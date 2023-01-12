@@ -44,6 +44,8 @@ function preload() {
   obstacleFiles.forEach( (obsfile) => {
     this.load.image( obsfile.name, `images/sprites/objects/${obsfile.file}`)
   })
+  //eyebrows
+  this.load.spritesheet('eyebrows', 'images/sprites/objects/OBS_Monobrows_Spritesheet.png')
   
   // background
   this.load.image('cloudsL', 'images/backgrounds/Clouds_Large-Fluffy.png')
@@ -57,7 +59,14 @@ function create() {
   cloudS = this.add.tileSprite(400, 300, 2400, 600, 'cloudsS')
   // text
   text = this.add.text(0, 0, score, { fontFamily:'Arial, Helvetica, sans-serif', fontSize: 20, padding: 10, textShadow: "1 1 1 4px black" })
-  // animations
+  // obstacle animations
+  this.anims.create({
+    key: "flap",
+    frameRate: 8,
+    frames: this.anims.generateFrameNumbers("eyebrows", { start: 0, end: 4 }),
+    repeat: -1
+  })
+  // player animations
   this.anims.create({
     key: "up",
     frameRate: 8,
@@ -77,9 +86,15 @@ function create() {
     repeat: 1
   })
   this.anims.create({
-    key: "burn",
+    key: "crash",
     frameRate: 8,
     frames: this.anims.generateFrameNumbers("santa", { start: 7, end: 9 }),
+    repeat: 1
+  })
+  this.anims.create({
+    key: "burn",
+    frameRate: 8,
+    frames: this.anims.generateFrameNumbers("santa", { start: 10, end: 13 }),
     repeat: -1
   })
 
@@ -94,13 +109,6 @@ function create() {
   player.play("down")
   player.setScale(0.38)
 
-  // obstacle
-  this.anims.create({
-    key: "pipe",
-    framerate: 7,
-    frames: this.anims.generateFrameNumbers("objects", { start: 0, end: 0 }),
-    repeat: 1
-  })
   // controls
   this.input.keyboard.on('keydown', function (event) {
     keyPress = event.key
@@ -150,11 +158,14 @@ function createObstacle(e) {
   let obj = e.physics.add.sprite(1300, lanes[ randGen(2) ] + 120, obsname )
   // const framenum = randGen(5)
   // obj.setFrame( framenum )
-  const obsScale = Math.random()
+  const oscale = randGen(0.7,0.3,false)
+  console.log(`objectscale=${oscale}`)
+  const obsScale = oscale
   obj.setScale(obsScale)
   e.physics.add.collider( player, obj, ( player, obj ) => {
     isPlaying = false
     player.play("crash")
+    player.chain(["burn"])
     player.setVelocityY(300)
     obj.destroy()
   }, null )
@@ -177,6 +188,7 @@ function manageObstacles() {
   })
 }
 
-function randGen(limit) {
-  return Math.round(Math.random() * limit)
+function randGen(limit, min=0, int=true ) {
+  const num = (int) ? Math.round(Math.random() * limit) : Math.random()
+  return ( num >= min ) ? num : min
 }
