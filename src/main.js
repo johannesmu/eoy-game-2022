@@ -29,12 +29,13 @@ let score = 0
 let obsInterval = 400
 let obstacles = []
 let obstacleFiles = [
- {name: "hat", file: "OBS_BowlerHat.png"},
- {name: "chandelier", file:"OBS_Chandelier.png"},
- {name: "clock", file:"OBS_DrippyClock.png"},
- {name: "pipe", file:"OBS_Pipe.png"},
- {name: "spider", file:"OBS_Spider.png"},
- {name: "urinal", file:"OBS_Urinal.png"},
+ {name: "hat", file: "OBS_BowlerHat.png", static: true },
+ {name: "chandelier", file:"OBS_Chandelier.png", static: true },
+ {name: "clock", file:"OBS_DrippyClock.png", static: true },
+ {name: "pipe", file:"OBS_Pipe.png", static: true },
+ {name: "spider", file:"OBS_Spider.png", static: true },
+ {name: "urinal", file:"OBS_Urinal.png", static: true },
+ {name: "eyebrows", file: "OBS_Eyebrows_Spritesheet", static: false }
 ]
 
 function preload() {
@@ -45,7 +46,7 @@ function preload() {
     this.load.image( obsfile.name, `images/sprites/objects/${obsfile.file}`)
   })
   //eyebrows
-  this.load.spritesheet('eyebrows', 'images/sprites/objects/OBS_Monobrows_Spritesheet.png')
+  this.load.spritesheet('eyebrows', 'images/sprites/objects/OBS_Monobrows_Spritesheet.png',{ frameWidth: 600, frameHeight: 300 })
   
   // background
   this.load.image('cloudsL', 'images/backgrounds/Clouds_Large-Fluffy.png')
@@ -78,12 +79,6 @@ function create() {
     frameRate: 8,
     frames: this.anims.generateFrameNumbers("santa", { start: 4, end: 6 }),
     repeat: -1
-  })
-  this.anims.create({
-    key: "crash",
-    frameRate: 8,
-    frames: this.anims.generateFrameNumbers("santa", { start: 7, end: 9 }),
-    repeat: 1
   })
   this.anims.create({
     key: "crash",
