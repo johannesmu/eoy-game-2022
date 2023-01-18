@@ -18,3 +18,11 @@ body {
   display: grid;
   place-items: center;
 }
+.main-header, .footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.copyright {
+  font-size: 2ch;
+}

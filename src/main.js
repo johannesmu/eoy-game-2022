@@ -21,12 +21,18 @@ const config = {
 const game = new Phaser.Game(config);
 
 // globals
-let cloudL, cloudS, player, keyPress, text
+let cloudL, cloudS, ground, player, keyPress, text
 let isPlaying = true
 let tick = 0
+// score
 let score = 0
+const scoreKey = "highscore"
+// player
+let playerRise = 300
+let playerFall = 200
 // obstacles
 let obsInterval = 400
+let obsSpeed = 3
 let obstacles = []
 let obstacleFiles = [
  {name: "hat", file: "OBS_BowlerHat.png", static: true },
@@ -51,6 +57,9 @@ function preload() {
   // background
   this.load.image('cloudsL', 'images/backgrounds/Clouds_Large-Fluffy.png')
   this.load.image('cloudsS', 'images/backgrounds/Clouds_Small-fluffy.png')
+  this.load.image('ground', 'images/backgrounds/Ground.png')
+
+  // score
 
 }
 
@@ -58,8 +67,17 @@ function create() {
   // backgrounds
   cloudL = this.add.tileSprite(400, 300, 2400, 600, 'cloudsL')
   cloudS = this.add.tileSprite(400, 300, 2400, 600, 'cloudsS')
-  // text
-  text = this.add.text(0, 0, score, { fontFamily:'Arial, Helvetica, sans-serif', fontSize: 20, padding: 10, textShadow: "1 1 1 4px black" })
+  ground = this.add.tileSprite(400,700,2400,20, 'ground')
+  // ground collider
+  // this.physics.add.collider( player, ground, ( player, ground ) => {
+  //   isPlaying = false
+  //   player.play("crash")
+  //   player.chain(["burn"])
+  // }, null )
+
+  // score text
+  text = this.add.text(0, 0, `score: ${score}`, { fontFamily:'Arial, Helvetica, sans-serif', fontSize: 30, padding: 10, textShadow: "1px 1px 1px 4px black" })
+
   // obstacle animations
   this.anims.create({
     key: "flap",
@@ -70,13 +88,13 @@ function create() {
   // player animations
   this.anims.create({
     key: "up",
-    frameRate: 8,
+    frameRate: 12,
     frames: this.anims.generateFrameNumbers("santa", { start: 0, end: 3 }),
     repeat: -1
   })
   this.anims.create({
     key: "down",
-    frameRate: 8,
+    frameRate: 12,
     frames: this.anims.generateFrameNumbers("santa", { start: 4, end: 6 }),
     repeat: -1
   })
@@ -84,7 +102,7 @@ function create() {
     key: "crash",
     frameRate: 8,
     frames: this.anims.generateFrameNumbers("santa", { start: 7, end: 9 }),
-    repeat: 1
+    repeat: 3
   })
   this.anims.create({
     key: "burn",
@@ -120,13 +138,14 @@ function update() {
 
   cloudL.tilePositionX += 1
   cloudS.tilePositionX += 0.25
-  
+  ground.tilePositionX += 1.2
+
   if(keyPress == " ") {
-    player.setVelocityY(-300)
+    player.setVelocityY(playerRise * -1 )
     player.play("up")
   }
   else {
-    player.setVelocityY(100)
+    player.setVelocityY(playerFall)
     player.play("down")
   }
 
@@ -135,11 +154,8 @@ function update() {
     console.log(`ticking ${tick}`)
     createObstacle(this)
   }
-  else if ( tick % 2000 == 0) {
-    obsInterval = 300
-  }
-  else if ( tick % 5000 == 0 ) {
-    obsInterval = 400
+  if( score > 10 ) {
+    obsSpeed = 5
   }
   manageObstacles()
 }
@@ -150,12 +166,10 @@ function createObstacle(e) {
   console.log(obsRange)
   const obsname = obstacleFiles[obsRange].name
   console.log( obsname )
-  let obj = e.physics.add.sprite(1300, lanes[ randGen(2) ] + 120, obsname )
+  let obj = e.physics.add.sprite(1300, randGen(500,0,true) + 120, obsname )
   // const framenum = randGen(5)
   // obj.setFrame( framenum )
-  const oscale = randGen(0.7,0.3,false)
-  console.log(`objectscale=${oscale}`)
-  const obsScale = oscale
+  const obsScale = randGen(0.6,0.3,false)
   obj.setScale(obsScale)
   e.physics.add.collider( player, obj, ( player, obj ) => {
     isPlaying = false
@@ -171,14 +185,13 @@ function manageObstacles() {
   // console.log( obstacles.length)
   obstacles.forEach( (obst) => {
     if( obst.x >= -200 ) {
-      obst.x -= 3
+      obst.x -= obsSpeed
     }
     else {
       obst.destroy()
       let item = obstacles.shift()
       item = null
-      score += 1
-      text.setText(score)
+      updateScore(1)
     }
   })
 }
@@ -186,4 +199,36 @@ function manageObstacles() {
 function randGen(limit, min=0, int=true ) {
   const num = (int) ? Math.round(Math.random() * limit) : Math.random()
   return ( num >= min ) ? num : min
+}
+
+function updateScore(val) {
+  score += val
+  text.setText( `score: ${score}`)
+  saveScore( scoreKey, score )
+}
+
+function saveScore ( key, val ) {
+  return new Promise( (resolve,reject) => {
+    try{
+      window.localStorage.setItem( key , val.toString() )
+      resolve( true )
+    }
+    catch( error ) {
+      console.log( error )
+      reject( false )
+    }
+  })
+}
+
+function readScore( key ) {
+  return new Promise( (resolve, reject) => {
+    try{
+      let score = window.localStorage.getItem(key)
+      resolve( score )
+    }
+    catch( error ) {
+      console.log( error )
+      reject( false )
+    }
+  } )
 }
